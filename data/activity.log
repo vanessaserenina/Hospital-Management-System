@@ -1,0 +1,12 @@
+[2026-06-21 01:50:28] System started. Session #1
+[2026-06-21 01:51:04] Patient added: Ethan Cole (ID: PAT0001)
+[2026-06-21 01:51:29] Doctor added: Adrian Wong (ID: DOC0001)
+[2026-06-21 01:51:42] Service added: General Consultation (Code: SVC001)
+[2026-06-21 01:52:35] Appointment scheduled: Patient PAT0001 | Service: SVC001 | Doctor: DOC0001
+[2026-06-21 01:53:10] Appointment updated: Patient PAT0001 | Appointment: APT00001
+[2026-06-21 01:53:34] Appointment updated: Patient PAT0001 | Appointment: APT00001
+[2026-06-21 01:56:25] System started. Session #1
+[2026-06-21 01:59:18] System started. Session #1
+[2026-06-21 01:59:39] Patient added: Sarah Hyland (ID: PAT0002)
+[2026-06-21 02:00:23] Doctor added: Jonathan Smith (ID: DOC0002)
+[2026-06-21 02:00:33] Service added: Blood Test (Code: SVC002)
