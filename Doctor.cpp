@@ -92,7 +92,7 @@ string Doctor::getType() const { return "Doctor"; }
 
 int Doctor::getDoctorCount() { return doctorCount; }
 
-std::string Doctor::generateDoctorId() {
+string Doctor::generateDoctorId() {
     ostringstream oss;
     oss << "DOC" << setw(4) << setfill('0') << nextDoctorNumber++;
     return oss.str();
