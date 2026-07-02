@@ -9,10 +9,14 @@ int MedicalService::serviceCount = 0;
 int MedicalService::nextServiceNumber = 1;
 
 MedicalService::MedicalService()
-    : serviceCode("SVC000"), serviceName("General Consultation"), baseFee(50.0) {}
+    : serviceCode("SVC000"), serviceName("General Consultation"), baseFee(50.0) {
+    serviceCount++;
+}
 
 MedicalService::MedicalService(string code, string name)
-    : serviceCode(code), serviceName(name), baseFee(50.0) {}
+    : serviceCode(code), serviceName(name), baseFee(50.0) {
+    serviceCount++;
+}
 
 MedicalService::MedicalService(string code, string name, double fee)
     : serviceCode(code), serviceName(name), baseFee(fee) {}
@@ -43,7 +47,6 @@ int MedicalService::getServiceCount() { return serviceCount; }
 string MedicalService::generateServiceCode() {
     ostringstream oss;
     oss << "SVC" << setw(3) << setfill('0') << nextServiceNumber++;
-    serviceCount++;
     return oss.str();
 }
 
