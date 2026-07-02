@@ -50,6 +50,11 @@ string MedicalService::generateServiceCode() {
     return oss.str();
 }
 
+void MedicalService::resetCounter() {
+    serviceCount = 0;
+    nextServiceNumber = 1;
+}
+
 void MedicalService::setNextServiceNumber(int next) {
     nextServiceNumber = next;
 }
