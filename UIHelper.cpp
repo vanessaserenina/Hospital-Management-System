@@ -40,6 +40,10 @@ void UIHelper::printInfo(string message) {
     cout << "[INFO]    " << message << endl;
 }
 
+// Source:
+// Samual Sam (2026)
+// TutorialsPoint, "How to clear console in C?"
+// https://www.tutorialspoint.com/article/how-to-clear-console-in-c
 void UIHelper::clearScreen() {
 #ifdef _WIN32
     system("cls");
@@ -79,6 +83,10 @@ int UIHelper::getIntInput(string prompt, int minVal, int maxVal) {
                        + to_string(minVal) + " and " + to_string(maxVal) + ".");
             continue;
         }
+        // Source:
+        // DANIWEB (2013).
+        // daniweb.com, "Updates version Age Calculator"
+        // https://www.daniweb.com/programming/software-development/threads/434926/updates-version-age-calculator
         try {
             size_t pos;
             value = stoi(line, &pos);
@@ -105,6 +113,10 @@ double UIHelper::getDoubleInput(string prompt, double minVal, double maxVal) {
             printError("Input cannot be empty.");
             continue;
         }
+        // Source:
+        // DANIWEB (2013).
+        // daniweb.com, "Updates version Age Calculator"
+        // https://www.daniweb.com/programming/software-development/threads/434926/updates-version-age-calculator
         try {
             size_t pos;
             value = stod(line, &pos);
@@ -143,6 +155,10 @@ string UIHelper::formatCurrency(double amount) {
     return oss.str();
 }
 
+// Source:
+// Stephens, D. R., Diggins, C., Turkanis, J., & Cogswell, J. (November, 2005).
+// C++ Cookbook. O'Reilly Media "4.1. Padding a String"
+// https://www.oreilly.com/library/view/c-cookbook/0596007612/ch04s02.html
 string UIHelper::padRight(string s, int width) {
     if (static_cast<int>(s.size()) >= width) return s.substr(0, width);
     return s + string(width - s.size(), ' ');
@@ -183,6 +199,10 @@ bool UIHelper::validateDate(const string& date) {
     if (month < 1   || month > 12)  return false;
     if (day   < 1)                  return false;
 
+    // Source:
+    // Barb Cutler (2006).
+    // CSCI-1200 Computer Science II - Lecture 1: Introduction and Background (Fall 2006)
+    // https://www.cs.rpi.edu/academics/courses/fall06/cs2/lectures/01_intro.pdf
     int daysInMonth[] = {0, 31,28,31,30,31,30,31,31,30,31,30,31};
     bool leap = (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
     if (month == 2 && leap) daysInMonth[2] = 29;

@@ -16,6 +16,10 @@ bool FileManager::fileExists(const string& path) {
     return (stat(path.c_str(), &buffer) == 0);
 }
 
+// Source:
+// ggml-org (n.d.).
+// llama.cpp - vulkan-shaders-gen.cpp
+// https://github.com/ggml-org/llama.cpp/blob/master/ggml/src/ggml-vulkan/vulkan-shaders/vulkan-shaders-gen.cpp
 bool FileManager::createDirectory(const string& path) {
 #ifdef _WIN32
     int result = _mkdir(path.c_str());
@@ -67,6 +71,10 @@ bool FileManager::deleteFile(const string& path) {
     return (remove(path.c_str()) == 0);
 }
 
+// Source:
+// The University of Western Australia (2002).
+// CITS2002 System Programming - Lecture 16
+// https://teaching.csse.uwa.edu.au/units/CITS2002/lectures/lecture16/singlepage.html
 string FileManager::getTimestamp() {
     time_t now = time(nullptr);
     struct tm* t = localtime(&now);
