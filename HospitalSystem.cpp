@@ -101,15 +101,14 @@ void HospitalSystem::menuAddPatient() {
     while (true) {
         UIHelper::printSectionHeader("--- Add New Patient ---");
 
-        string name;
-        while (true) {
-            name = UIHelper::getInput("  Enter Patient Name          : ");
-            if (!name.empty()) break;
-            UIHelper::printError("Patient name cannot be empty. Please try again.");
+        string name = UIHelper::getInput("  Enter Patient Name          : ");
+        if (name.empty()) {
+            throw invalid_argument("Patient name cannot be empty. No patient was added.");
         }
 
+        recalculateIdCounters();
         string id = Patient::generatePatientId();
-        cout << endl << "  Auto-generated Patient ID: " << id << endl << endl;
+        cout << "  Auto-generated Patient ID: " << id << endl << endl;
 
         string insurance = UIHelper::getInput("  Enter Insurance Provider    : ");
         if (insurance.empty()) insurance = "None";
@@ -142,15 +141,14 @@ void HospitalSystem::menuAddDoctor() {
     while (true) {
         UIHelper::printSectionHeader("--- Add New Doctor ---");
 
-        string name;
-        while (true) {
-            name = UIHelper::getInput("  Enter Doctor Name           : ");
-            if (!name.empty()) break;
-            UIHelper::printError("Doctor name cannot be empty. Please try again.");
+        string name = UIHelper::getInput("  Enter Doctor Name           : ");
+        if (name.empty()) {
+            throw invalid_argument("Doctor name cannot be empty. No doctor was added.");
         }
 
+        recalculateIdCounters();
         string id = Doctor::generateDoctorId();
-        cout << endl << "  Auto-generated Doctor ID: " << id << endl << endl;
+        cout << "  Auto-generated Doctor ID: " << id << endl << endl;
 
         string spec = UIHelper::getInput("  Enter Specialization Dept   : ");
         if (spec.empty()) spec = "General Medicine";
@@ -184,15 +182,14 @@ void HospitalSystem::menuAddMedicalService() {
     while (true) {
         UIHelper::printSectionHeader("--- Add New Medical Service ---");
 
-        string name;
-        while (true) {
-            name = UIHelper::getInput("  Enter Service Name          : ");
-            if (!name.empty()) break;
-            UIHelper::printError("Service name cannot be empty. Please try again.");
+        string name = UIHelper::getInput("  Enter Service Name          : ");
+        if (name.empty()) {
+            throw invalid_argument("Service name cannot be empty. No service was added.");
         }
 
+        recalculateIdCounters();
         string code = MedicalService::generateServiceCode();
-        cout << endl << "  Auto-generated Service Code: " << code << endl << endl;
+        cout << "  Auto-generated Service Code: " << code << endl << endl;
 
         bool useDefault = UIHelper::getYesNo("  Use default base fee ($50.00)?");
         MedicalService svc;
@@ -1051,21 +1048,34 @@ void HospitalSystem::loadServicesFromFile() {
 }
 
 void HospitalSystem::recalculateIdCounters() {
-    int maxPatientNum = 0, maxDoctorNum = 0, maxServiceNum = 0;
+    auto smallestMissing = [](vector<int> nums) -> int {
+        sort(nums.begin(), nums.end());
+        int expected = 1;
+        for (int n : nums) {
+            if (n == expected) {
+                expected++;
+            } else if (n > expected) {
+                break;
+            }
+        }
+        return expected;
+    };
+
+    vector<int> patientNums, doctorNums, serviceNums;
 
     for (const Person* p : users) {
         if (p->getType() == "Patient") {
             string id = p->getId();
             if (id.rfind("PAT", 0) == 0) {
                 try {
-                    maxPatientNum = max(maxPatientNum, stoi(id.substr(3)));
+                    patientNums.push_back(stoi(id.substr(3)));
                 } catch (...) { /* ignore malformed ID */ }
             }
         } else if (p->getType() == "Doctor") {
             string id = p->getId();
             if (id.rfind("DOC", 0) == 0) {
                 try {
-                    maxDoctorNum = max(maxDoctorNum, stoi(id.substr(3)));
+                    doctorNums.push_back(stoi(id.substr(3)));
                 } catch (...) { /* ignore malformed ID */ }
             }
         }
@@ -1075,14 +1085,14 @@ void HospitalSystem::recalculateIdCounters() {
         string code = s.getServiceCode();
         if (code.rfind("SVC", 0) == 0) {
             try {
-                maxServiceNum = max(maxServiceNum, stoi(code.substr(3)));
+                serviceNums.push_back(stoi(code.substr(3)));
             } catch (...) { /* ignore malformed code */ }
         }
     }
 
-    Patient::setNextPatientNumber(maxPatientNum + 1);
-    Doctor::setNextDoctorNumber(maxDoctorNum + 1);
-    MedicalService::setNextServiceNumber(maxServiceNum + 1);
+    Patient::setNextPatientNumber(smallestMissing(patientNums));
+    Doctor::setNextDoctorNumber(smallestMissing(doctorNums));
+    MedicalService::setNextServiceNumber(smallestMissing(serviceNums));
 }
 
 void HospitalSystem::menuViewAllPatients() const {
