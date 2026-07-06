@@ -21,6 +21,7 @@ private:
     void saveServicesToFile() const;
     void loadUsersFromFile();
     void loadServicesFromFile();
+    void recalculateIdCounters();
 
     Patient* findPatientById(string id) const;
     Doctor* findDoctorById(string id) const;

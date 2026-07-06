@@ -101,11 +101,15 @@ void HospitalSystem::menuAddPatient() {
     while (true) {
         UIHelper::printSectionHeader("--- Add New Patient ---");
 
-        string id = Patient::generatePatientId();
-        cout << "  Auto-generated Patient ID: " << id << endl << endl;
+        string name;
+        while (true) {
+            name = UIHelper::getInput("  Enter Patient Name          : ");
+            if (!name.empty()) break;
+            UIHelper::printError("Patient name cannot be empty. Please try again.");
+        }
 
-        string name = UIHelper::getInput("  Enter Patient Name          : ");
-        if (name.empty()) throw invalid_argument("Patient name cannot be empty.");
+        string id = Patient::generatePatientId();
+        cout << endl << "  Auto-generated Patient ID: " << id << endl << endl;
 
         string insurance = UIHelper::getInput("  Enter Insurance Provider    : ");
         if (insurance.empty()) insurance = "None";
@@ -138,11 +142,15 @@ void HospitalSystem::menuAddDoctor() {
     while (true) {
         UIHelper::printSectionHeader("--- Add New Doctor ---");
 
-        string id = Doctor::generateDoctorId();
-        cout << "  Auto-generated Doctor ID: " << id << endl << endl;
+        string name;
+        while (true) {
+            name = UIHelper::getInput("  Enter Doctor Name           : ");
+            if (!name.empty()) break;
+            UIHelper::printError("Doctor name cannot be empty. Please try again.");
+        }
 
-        string name = UIHelper::getInput("  Enter Doctor Name           : ");
-        if (name.empty()) throw invalid_argument("Doctor name cannot be empty.");
+        string id = Doctor::generateDoctorId();
+        cout << endl << "  Auto-generated Doctor ID: " << id << endl << endl;
 
         string spec = UIHelper::getInput("  Enter Specialization Dept   : ");
         if (spec.empty()) spec = "General Medicine";
@@ -176,11 +184,15 @@ void HospitalSystem::menuAddMedicalService() {
     while (true) {
         UIHelper::printSectionHeader("--- Add New Medical Service ---");
 
-        string code = MedicalService::generateServiceCode();
-        cout << "  Auto-generated Service Code: " << code << endl << endl;
+        string name;
+        while (true) {
+            name = UIHelper::getInput("  Enter Service Name          : ");
+            if (!name.empty()) break;
+            UIHelper::printError("Service name cannot be empty. Please try again.");
+        }
 
-        string name = UIHelper::getInput("  Enter Service Name          : ");
-        if (name.empty()) throw invalid_argument("Service name cannot be empty.");
+        string code = MedicalService::generateServiceCode();
+        cout << endl << "  Auto-generated Service Code: " << code << endl << endl;
 
         bool useDefault = UIHelper::getYesNo("  Use default base fee ($50.00)?");
         MedicalService svc;
@@ -477,6 +489,7 @@ void HospitalSystem::menuDeleteRecords() {
                     }
                     string name = patient->getName();
                     delete patient;
+                    recalculateIdCounters();
                     saveUsersToFile();
                     FileManager::logActivity(dataDirectory + "/activity.log",
                         "Patient deleted: " + name + " (ID: " + patientId + ")");
@@ -497,6 +510,7 @@ void HospitalSystem::menuDeleteRecords() {
                     }
                     string name = doctor->getName();
                     delete doctor;
+                    recalculateIdCounters();
                     saveUsersToFile();
                     FileManager::logActivity(dataDirectory + "/activity.log",
                         "Doctor deleted: " + name + " (ID: " + doctorId + ")");
@@ -516,6 +530,7 @@ void HospitalSystem::menuDeleteRecords() {
                     if (it != serviceCatalog.end()) {
                         string name = it->getServiceName();
                         serviceCatalog.erase(it);
+                        recalculateIdCounters();
                         saveServicesToFile();
                         FileManager::logActivity(dataDirectory + "/activity.log",
                             "Medical Service deleted: " + name + " (Code: " + serviceCode + ")");
@@ -630,8 +645,6 @@ void HospitalSystem::editMedicalService(MedicalService* s) {
         "Medical Service edited: " + s->getServiceName() + " (Code: " + s->getServiceCode() + ")");
     UIHelper::printSuccess("Medical Service details updated successfully.");
 }
-// ---- Merged from HospitalSystem2.cpp ----
-
 
 void HospitalSystem::menuViewAllUsers() const {
     UIHelper::printSectionHeader("--- All System Users (Runtime Polymorphism) ---");
@@ -1034,6 +1047,41 @@ void HospitalSystem::loadServicesFromFile() {
             cerr << "[LOAD WARNING] Skipping corrupted service: " << e.what() << endl;
         }
     }
+    MedicalService::setNextServiceNumber(maxServiceNum + 1);
+}
+
+void HospitalSystem::recalculateIdCounters() {
+    int maxPatientNum = 0, maxDoctorNum = 0, maxServiceNum = 0;
+
+    for (const Person* p : users) {
+        if (p->getType() == "Patient") {
+            string id = p->getId();
+            if (id.rfind("PAT", 0) == 0) {
+                try {
+                    maxPatientNum = max(maxPatientNum, stoi(id.substr(3)));
+                } catch (...) { /* ignore malformed ID */ }
+            }
+        } else if (p->getType() == "Doctor") {
+            string id = p->getId();
+            if (id.rfind("DOC", 0) == 0) {
+                try {
+                    maxDoctorNum = max(maxDoctorNum, stoi(id.substr(3)));
+                } catch (...) { /* ignore malformed ID */ }
+            }
+        }
+    }
+
+    for (const auto& s : serviceCatalog) {
+        string code = s.getServiceCode();
+        if (code.rfind("SVC", 0) == 0) {
+            try {
+                maxServiceNum = max(maxServiceNum, stoi(code.substr(3)));
+            } catch (...) { /* ignore malformed code */ }
+        }
+    }
+
+    Patient::setNextPatientNumber(maxPatientNum + 1);
+    Doctor::setNextDoctorNumber(maxDoctorNum + 1);
     MedicalService::setNextServiceNumber(maxServiceNum + 1);
 }
 
