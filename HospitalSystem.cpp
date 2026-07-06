@@ -14,18 +14,34 @@ int HospitalSystem::systemSessionCount = 0;
 
 HospitalSystem::HospitalSystem()
     : dataDirectory("data") {
-    systemSessionCount++;
     FileManager::createDirectory(dataDirectory);
+    loadSessionCount();
     loadUsersFromFile();
     loadServicesFromFile();
 }
 
 HospitalSystem::HospitalSystem(string dataDir)
     : dataDirectory(dataDir) {
-    systemSessionCount++;
     FileManager::createDirectory(dataDirectory);
+    loadSessionCount();
     loadUsersFromFile();
     loadServicesFromFile();
+}
+
+void HospitalSystem::loadSessionCount() {
+    string sessionPath = dataDirectory + "/session.dat";
+    int savedCount = 0;
+
+    if (FileManager::fileExists(sessionPath)) {
+        try {
+            savedCount = stoi(FileManager::readFromFile(sessionPath));
+        } catch (const exception&) {
+            savedCount = 0;
+        }
+    }
+
+    systemSessionCount = savedCount + 1;
+    FileManager::writeToFile(sessionPath, to_string(systemSessionCount));
 }
 
 HospitalSystem::~HospitalSystem() {
